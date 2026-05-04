@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+    <head>
+    <!-- Using Bootstrap 5 Quick Snippets Extension by publisher:"Anbuselvan Annamalai" -->
+        <title>{% block title %}{% endblock %}</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <!-- Bootstrap CSS v5.3.8 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="/static/styles.css" />
+    </head>
+
+    <body>
+        <header>
+            <!-- Navbar -->
+             <nav class="navbar navbar-expand-sm navbar-dark container-fluid" style="background-color: #343a40;">
+                <a class="navbar-brand" href="/dashboard">Cashflow Tracker App</a>
+                <button
+                    class="navbar-toggler d-lg-none"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapsibleNavId"
+                    aria-controls="collapsibleNavId"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar LEFT content -->
+                <div class="collapse navbar-collapse" id="collapsibleNavId">
+                    <ul class="navbar-nav me-auto mt-2 mt-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/earnings">Earnings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/expenses">Expenses</a>
+                        </li>
+                    </ul>
+
+                    <!-- Navbar RIGHT content -->
+                    <ul class="navbar-nav ms-auto">
+                        {% if session.user_id %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/logout">Logout</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/register">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/login">Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+             </nav>
+
+        </header>
+        <main>{% block main %}{% endblock %}</main>
+        <footer class="small text-muted fst-italic bg-dark text-light text-center py-3 border-top text-start">
+             <p class="mb-0">2026 Viera'sCashflow Tracker WebApp.</p>
+             <p class="mb-0">CS50X(2026) Project.</p>
+        </footer>
+        <!-- Bootstrap JavaScript Bundle (includes Popper) -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>
+
+
+

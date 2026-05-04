@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block main %}
+<div class="container-fluid py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 text-center">
+      <!-- Placeholder for logo -->
+      <div class="logo-placeholder mb-4">
+        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+          <span class="text-light fs-1 fw-bold">BT</span>
+        </div>
+      </div>
+
+      <h1 class="display-4 fw-bold text-light mb-3">Welcome to Balance Tracker App</h1>
+      <p class="lead text-muted mb-4">
+        Take control of your personal finances with our easy-to-use income and expense tracking tool.
+        Monitor your balance, analyze trends, and make informed decisions.
+      </p>
+
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="/register" class="btn btn-primary btn-lg">Get Started</a>
+        <a href="/login" class="btn btn-outline-light btn-lg">Sign In</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
