@@ -49,4 +49,4 @@ def register():
         return redirect("/login")
 
     else:
-        return render_template("register.html") 
+        return render_template("register.html")
