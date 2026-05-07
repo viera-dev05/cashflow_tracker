@@ -1,7 +1,9 @@
+import os
 import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
+from database import init_db, DB_PATH
 
 # Configure application
 app = Flask(__name__)
@@ -10,7 +12,10 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure database. Note: Switching from cs50 library to sqlite3 to learn without 'training wheels'.
-db = sqlite3.connect("cashflow_tracker.db")
+# I'm using sqlite so the app won't be able to manage multiple users at the same time. That's fine for the scope of this project.
+# If no database file exists, it will be created automatically. 
+init_db()
+db = sqlite3.connect(DB_PATH)
 
 # Adding cache control to avoid caching issues.
 @app.after_request
