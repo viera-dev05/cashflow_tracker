@@ -44,9 +44,17 @@ def register():
         # Insert the new user into the database
         db.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
         db.commit()
-
+        
+        # TODO: Add error handling for duplicate usernames/emails and other potential issues.
+            
+        # Flash if successful 
+        flash("Registered successfully! Please log in.", "success")
         # Redirect to the login page
         return redirect("/login")
 
+        # TODO: Create login template.    
+
     else:
         return render_template("register.html")
+    
+ 

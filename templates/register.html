@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block main %}
+    <h1>Register</h1>
+    <h3>Register your information</h3> 
+
+    <!-- Display error message if there is one -->
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+    
+    <!-- Registration form -->
+    <form action="/register" method="post">
+        <div class="container-fluid">
+            <div class="col-4 row">
+
+                <!-- Username input -->
+                <!-- Username rules: 3-18 char, alphanumeric. Could have underscore in between but not start or end with one -->
+                <div class="mb-3">
+                    <label for="register-username" class="form-label">Username</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="username"
+                        id="register-username"
+                        placeholder="Username"
+                        minlength="3"
+                        maxlength="18"
+                        pattern="^[a-zA-Z0-9][a-zA-Z0-9_]{1,16}[a-zA-Z0-9]$"
+                        required
+                    />
+                </div>
+
+                <!-- Email input -->
+                <!-- Email rules: valid email format, max 100 char -->
+                <div class="mb-3">
+                    <label for="register-email" class="form-label">Email</label>
+                    <input
+                        type="email"
+                        class="form-control"
+                        name="email"
+                        id="register-email"
+                        placeholder="Email"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+
+                <!-- Password input. -->
+                <!-- Password rules: 8 - 128 char. At least 1 uppercase letter and 1 digit -->
+                <div class="mb-3">
+                    <label for="register-password" class="form-label">Password</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        name="password"
+                        id="register-password"
+                        placeholder="Password"                        
+                        minlength="8"
+                        maxlength="128"
+                        required
+                        pattern="(?=.*[A-Z])(?=.*[0-9]).{8,128}$"
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <label for="register-confirm" class="form-label">Confirm Password</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        name="confirm-password"
+                        id="register-confirm"
+                        placeholder="Confirm Password"
+                        minlength="8"
+                        maxlength="128"
+                        required
+                    />
+                </div>             
+            </div>
+        </div>
+        
+    </form>  
+        
+{% endblock %}
