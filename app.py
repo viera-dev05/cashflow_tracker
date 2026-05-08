@@ -36,7 +36,11 @@ def welcome():
 @app.route("/")
 @login_required
 def index():
-    return render_template("dashboard.html")
+    return redirect("/dashboard/")
+
+
+#TODO: @app.route("/dashboard") to show user's transactions and balance.
+
 
 # Register route for new users to create an account.
 @app.route("/register", methods=["GET", "POST"])
@@ -51,11 +55,15 @@ def register():
         hashed_password = generate_password_hash(password)
 
         # Insert the new user into the database
-        db.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
-        db.commit()
-        
-# TODO: Add error handling for duplicate usernames/emails and other potential issues.
-            
+        # Could consider moving query logic to database.py for better separation of concerns, but keeping it here for simplicity for now.
+        try:
+            db.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
+            db.commit()
+        except sqlite3.IntegrityError:
+            # TODO: Add error handling for duplicate usernames/emails and other potential issues.
+            flash("Username or email already registered.", "error")
+            return render_template("register.html")
+
         # Flash if successful 
         flash("Registered successfully! Please log in.", "success")
         # Redirect to the login page
