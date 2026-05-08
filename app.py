@@ -4,6 +4,7 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from database import init_db, DB_PATH
+from decorators import login_required
 
 # Configure application
 app = Flask(__name__)
@@ -26,13 +27,16 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+# Welcome page route
+@app.route("/welcome")
+def welcome():
+    return render_template("welcome.html")
+
 # Root route redirects to dashboard if logged in, otherwise to Welcome page.
 @app.route("/")
+@login_required
 def index():
-    if "user_id" in session:
-        return render_template("dashboard.html")
-    else:
-        return render_template("welcome.html")
+    return render_template("dashboard.html")
 
 # Register route for new users to create an account.
 @app.route("/register", methods=["GET", "POST"])
@@ -50,16 +54,14 @@ def register():
         db.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
         db.commit()
         
-        # TODO: Add error handling for duplicate usernames/emails and other potential issues.
+# TODO: Add error handling for duplicate usernames/emails and other potential issues.
             
         # Flash if successful 
         flash("Registered successfully! Please log in.", "success")
         # Redirect to the login page
         return redirect("/login")
 
-        # TODO: Create login template.    
+# TODO: Create login template.    
 
     else:
         return render_template("register.html")
-    
- 
