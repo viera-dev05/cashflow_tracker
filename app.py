@@ -5,15 +5,23 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from database import init_db, DB_PATH
 from decorators import login_required
+from dotenv import load_dotenv
+
+# Load environment variables from .env file. Remember to create a .env file with needed variables. See the .env.example file for reference.
+load_dotenv()
 
 # Configure application
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+if not app.config["SECRET_KEY"]:
+    raise ValueError("SECRET_KEY is not set in the environment variables (.env file). Please set it to a secure random value.")
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+
 # Configure database. Note: Switching from cs50 library to sqlite3 to learn without 'training wheels'.
-# I'm using sqlite so the app won't be able to manage multiple users at the same time. That's fine for the scope of this project.
+# I'm using sqlite, the app won't be able to manage multiple users at the same time. That's fine for the scope of this project.
 # If no database file exists, it will be created automatically. 
 init_db()
 db = sqlite3.connect(DB_PATH)
@@ -50,9 +58,19 @@ def register():
         username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+
+        # Check if passwords match
+        if password != confirm_password:
+            flash("Passwords do not match.", "error")
+            return render_template("register.html")
 
         # Hash the password
         hashed_password = generate_password_hash(password)
+
+
+#TODO: Add server-side validation for username, email and password.
+
 
         # Insert the new user into the database
         # Could consider moving query logic to database.py for better separation of concerns, but keeping it here for simplicity for now.
@@ -60,7 +78,6 @@ def register():
             db.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
             db.commit()
         except sqlite3.IntegrityError:
-            # TODO: Add error handling for duplicate usernames/emails and other potential issues.
             flash("Username or email already registered.", "error")
             return render_template("register.html")
 
