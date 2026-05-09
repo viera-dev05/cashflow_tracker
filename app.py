@@ -70,6 +70,7 @@ def index():
 
 
 #TODO: @app.route("/dashboard") to show user's transactions and balance.
+#TODO: Verify that SECRET_KEY is beign used. Log in, then chance secret key and check
 
 
 # Register route for new users to create an account.
@@ -139,14 +140,20 @@ def login():
         # Get form data
         username = request.form.get("username")
         password = request.form.get("password")
-        
+
         # Validate form data
         if not username or not password:
             flash("Please fill out all fields.", "danger")
             return render_template("login.html")
         
+        # Check username and password length before hashing to prevent unnecesary computation
+        if len(password) > 128 or len(username) > 18:
+            flash("Invalid username or password.", "danger")
+            return render_template("login.html")
+        
         # Query the database for the user
-        user = get_db().execute("select * from users where username = ?", (username,)).fetchone()
+        user = get_db().execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+
         if user is None or not check_password_hash(user["hash"], password):
             flash("Invalid username or password.", "danger")
             return render_template("login.html")
