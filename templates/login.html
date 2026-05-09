@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block main %}
+    <h1>Login</h1>
+    <h3>Please enter your credentials</h3>
+
+    <!-- Display alert message if there is one -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Login form -->
+    <form action="/login" method="post">
+        <div class="container-fluid">
+            <div class="col-4 row">
+
+                <!-- Username input -->
+                 <!-- Could add user or email for complexity. But not needed for the scope of this project-->
+                <div class="mb-3">
+                    <label for="login-username" class="form-label">Username</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        name="username"
+                        id="login-username"
+                        placeholder="Username"
+                        required
+                        title="Required."
+                    />
+                </div>
+
+                <!-- Password input. -->
+                <div class="mb-3">
+                    <label for="login-password" class="form-label">Password</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        name="password"
+                        id="login-password"
+                        placeholder="Password"                        
+                        required
+                        title="Required."
+                    />
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Log in</button>       
+            </div>
+        </div>
+        
+    </form>  
+        
+{% endblock %}
