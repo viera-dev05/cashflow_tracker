@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, g
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from database import init_db, DB_PATH
@@ -20,11 +20,17 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
-# Configure database. Note: Switching from cs50 library to sqlite3 to learn without 'training wheels'.
+# Configure database. 
+# Note: Switching from cs50 library to sqlite3 to learn without 'training wheels'.
 # I'm using sqlite, the app won't be able to manage multiple users at the same time. That's fine for the scope of this project.
 # If no database file exists, it will be created automatically. 
 init_db()
-db = sqlite3.connect(DB_PATH)
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(DB_PATH)
+        g.db.row_factory = sqlite3.Row  # To return rows as dictionaries
+    return g.db
+
 
 # Adding cache control to avoid caching issues.
 @app.after_request
@@ -75,8 +81,8 @@ def register():
         # Insert the new user into the database
         # Could consider moving query logic to database.py for better separation of concerns, but keeping it here for simplicity for now.
         try:
-            db.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
-            db.commit()
+            get_db().execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
+            get_db().commit()
         except sqlite3.IntegrityError:
             flash("Username or email already registered.", "error")
             return render_template("register.html")
