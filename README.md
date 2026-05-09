@@ -1,6 +1,7 @@
 # Cashflow Tracker WebApp
 
 ## Description
+
 A web application built with Flask and SQLite for tracking personal income and expenses.
 Users can authenticate, record financial transactions, and view a dashboard with summaries.
 This is for my CS50x final project and I'm using VS Code Copilot extension,
@@ -11,11 +12,13 @@ this information. This is not a groceries expenses type of app, but instead the
 formal income and expenses of a business.
 
 ## Basic Features
+
 - User authentication with hashed passwords (similar to CS50x Finance)
 - Record income and expenses.
 - Dashboard for financial overview
 
 ## Future Enhancements if possible
+
 - Filters by date, category, or amount
 - Charts and graphs
 - Export/import to CSV
@@ -24,23 +27,28 @@ formal income and expenses of a business.
 - And more
 
 ## Technologies
+
 - Python
 - Flask
 - SQLite
 - Bootstrap (for quick web design)
 
 ## Installation
+
 1. Clone the repository.
 2. Install dependencies: `pip install -r requirements.txt`
-3. Run the app: `flask run`
+3. Set your own random SECRET_KEY in .env.example and rename to .env
+4. Run the app: `flask run`
 
 ## Usage
+
 - Register a new user account.
 - Log in to access the application.
 - Add income or expense entries.
 - View the dashboard for financial summaries.
 
 ## Decision making
+
 - As stated in a comment in layout.html, I'm using Bootstrap 5 Quick Snippets Extension
 by publisher:"Anbuselvan Annamalai" for quicker html generation.
 - As I'm not that familiar with Flask yet, reusing some code from problem set 9 'finance', from
@@ -50,3 +58,5 @@ cs50x(2026)
 but after some research, seems like end to end encryption would make the backend harder or
 even imposible as per my quick investigation. I would need a deeper research to find a solution.
 For now, the data will be accesible by the admin.
+- Added some security measures like SECRET_KEY env. variable and flask_limiter. Limiter is probably not needed for the scope of this proyect but its nice to learn it exists.
+- Was using regex for email validation, but instead will opt for email-validator for better validation performance.

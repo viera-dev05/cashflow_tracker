@@ -2,10 +2,15 @@ import os
 import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, g
 from flask_session import Session
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
 from database import init_db, DB_PATH
 from decorators import login_required
 from dotenv import load_dotenv
+from email_validator import validate_email, EmailNotValidError
+import re
+
 
 # Load environment variables from .env file. Remember to create a .env file with needed variables. See the .env.example file for reference.
 load_dotenv()
@@ -19,6 +24,10 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Configure rate limiter to prevent abuse.
+limiter = Limiter(key_func=get_remote_address)
+limiter.init_app(app)
+
 
 # Configure database. 
 # Note: Switching from cs50 library to sqlite3 to learn without 'training wheels'.
@@ -30,6 +39,13 @@ def get_db():
         g.db = sqlite3.connect(DB_PATH)
         g.db.row_factory = sqlite3.Row  # To return rows as dictionaries
     return g.db
+
+# Close the database connection after each request to prevent resource leaks.
+@app.teardown_appcontext
+def close_db(error):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
 
 
 # Adding cache control to avoid caching issues.
@@ -58,6 +74,7 @@ def index():
 
 # Register route for new users to create an account.
 @app.route("/register", methods=["GET", "POST"])
+@limiter.limit("5 per minute")  # Limit registration attempts to prevent abuse. 
 def register():
     if request.method == "POST":
         # Get form data
@@ -65,18 +82,32 @@ def register():
         email = request.form.get("email")
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
-
-        # Check if passwords match
+      
+        # Validate form data.
+        if not username or not email or not password:
+            flash("Please fill out all fields.", "danger")
+            return render_template("register.html")
+        # Validate username
+        if not re.match(r"^[a-zA-Z0-9][a-zA-Z0-9_]{1,16}[a-zA-Z0-9]$", username):
+            flash("Username can only contain letters and numbers. It can also have underscores in between but not at the beginning or end.", "danger") 
+            return render_template("register.html")
+        # Validate email
+        try:
+            validated_email = validate_email(email, check_deliverability=False) # check_deliverability=False to avoid latency.
+            email = validated_email.normalized
+        except EmailNotValidError:
+            flash("Invalid email address.", "danger")
+            return render_template("register.html")    
+        # Validate password
+        if not re.match(r"^(?=.*[A-Z])(?=.*[0-9]).{8,128}$", password):
+            flash("Password must be between 8 and 128 characters.", "danger")
+            return render_template("register.html")
         if password != confirm_password:
-            flash("Passwords do not match.", "error")
+            flash("Passwords do not match.", "danger")
             return render_template("register.html")
 
-        # Hash the password
-        hashed_password = generate_password_hash(password)
-
-
-#TODO: Add server-side validation for username, email and password.
-
+       # Hash the password
+        hashed_password = generate_password_hash(password) 
 
         # Insert the new user into the database
         # Could consider moving query logic to database.py for better separation of concerns, but keeping it here for simplicity for now.
@@ -84,11 +115,12 @@ def register():
             get_db().execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
             get_db().commit()
         except sqlite3.IntegrityError:
-            flash("Username or email already registered.", "error")
+            flash("Username or email already registered.", "danger")
             return render_template("register.html")
 
         # Flash if successful 
         flash("Registered successfully! Please log in.", "success")
+
         # Redirect to the login page
         return redirect("/login")
 
