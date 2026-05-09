@@ -106,7 +106,7 @@ def register():
             flash("Passwords do not match.", "danger")
             return render_template("register.html")
 
-       # Hash the password
+       # If form is correct, hash the password
         hashed_password = generate_password_hash(password) 
 
         # Insert the new user into the database
@@ -122,9 +122,39 @@ def register():
         flash("Registered successfully! Please log in.", "success")
 
         # Redirect to the login page
-        return redirect("/login")
+        return redirect("/login")   
 
-# TODO: Create login template.    
-
+# If GET request, just render the registration form.    
     else:
         return render_template("register.html")
+    
+
+# Login route for existing users to log in.
+@app.route("/login", methods=["GET", "POST"])
+@limiter.limit("10 per minute")  # Limit login attempts to prevent abuse.
+def login():
+    # If POST request, process the login form.
+    # Note: Copilot auto completion suggest adding account lockout. Not needed for the scope of this project but it was nice to learn about it.
+    if request.method == "POST":
+        # Get form data
+        username = request.form.get("username")
+        password = request.form.get("password")
+        
+        # Validate form data
+        if not username or not password:
+            flash("Please fill out all fields.", "danger")
+            return render_template("login.html")
+        
+        # Query the database for the user
+        user = get_db().execute("select * from users where username = ?", (username,)).fetchone()
+        if user is None or not check_password_hash(user["hash"], password):
+            flash("Invalid username or password.", "danger")
+            return render_template("login.html")
+        
+        # Remember the user in the session
+        session["user_id"] = user["id"]
+        return redirect("/dashboard")
+    
+    # If GET request, just render the login form.
+    else:
+        return render_template("login.html")
