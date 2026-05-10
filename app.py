@@ -1,3 +1,4 @@
+from curses import use_default_colors
 import os
 import sqlite3
 from unicodedata import category
@@ -107,14 +108,25 @@ def dashboard():
     return render_template("dashboard.html")
 
 
+# TODO: ANALYZE THE SCRIPT IN /TRANSACTIONS TO BETTER UNDERSTAND THIS FUNCTION
     
 @app.route("/transactions", methods=["GET", "POST"])
 @login_required
 def transactions():
+    db = get_db()
+    user_id = session["user_id"]
+
+    # Query the user's categories (needed for both GET and POST to render the form)
+    categories = db.execute("SELECT * FROM categories WHERE user_id = ?", (user_id,)).fetchall()
+    categories_dict = {"Income": [], "Outcome": []}
+    for row in categories:
+        categories_dict[row["type"]].append({"id": row["id"], "category": row["category"]})
+
     if request.method == "POST":
-        # Logic to save the transaction will go here
-        return redirect("/transactions")
-    return render_template("transactions.html")
+        # TODO: Add logic to save the transaction
+        pass
+
+    return render_template("transactions.html", categories=categories_dict)
 
 
 # Register route for new users to create an account.
