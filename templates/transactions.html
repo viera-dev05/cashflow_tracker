@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %}Transactions{% endblock %}
+
+{% block main %}
+    <h1>Transactions</h1>
+
+    <!-- Display alert message if there is one -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+    <!-- Transaction form -->
+     <form action="/transactions" method="post">
+        <div
+            class="container-fluid"
+        >
+            <div
+                class="row justify-content-center align-items-center g-2"
+            >
+                <div class="col">
+                    <div class="mb-3">
+                        <label for="transaction-date" class="form-label">Date</label>
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="date"
+                            id="transaction-date"
+                            placeholder="Date"
+                        />
+                    </div>
+                     
+                </div>
+                <div class="col">
+                    Type
+                </div>
+                <div class="col">
+                    Category
+                </div>
+                <div class="col">
+                    Amount
+                </div>
+                <div class="col">
+                    Description
+                </div>
+            </div>
+            
+        </div>
+    </form>
+{% endblock %}

@@ -97,7 +97,14 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-#TODO: Verify that SECRET_KEY is beign used. Log in, then chance secret key and check
+    
+@app.route("/transactions", methods=["GET", "POST"])
+@login_required
+def transactions():
+    if request.method == "POST":
+        # Logic to save the transaction will go here
+        return redirect("/transactions")
+    return render_template("transactions.html")
 
 
 # Register route for new users to create an account.
