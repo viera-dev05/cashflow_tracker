@@ -34,15 +34,46 @@
                             name="date"
                             id="transaction-date"
                             placeholder="Date"
+                            required
                         />
                     </div>
                      
                 </div>
                 <div class="col">
-                    Type
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <label for="transaction-type" class="form-label">Type</label>
+                            <select
+                                class="form-select"
+                                name="type"
+                                id="transaction-type"
+                                required
+                            >
+                                <option value="" selected disabled>Select one</option>
+                                <option value="Income">Income</option>
+                                <option value="Outcome">Outcome</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                    
                 </div>
+
                 <div class="col">
-                    Category
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select
+                            class="form-select"
+                            name="category"
+                            id="category"
+                        >
+                            <option selected>Select one</option>
+                            <option value="">New Delhi</option>
+                            <option value="">Istanbul</option>
+                            <option value="">Jakarta</option>
+                        </select>
+                    </div>
+                    
                 </div>
                 <div class="col">
                     Amount

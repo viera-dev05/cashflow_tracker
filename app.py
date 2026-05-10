@@ -1,5 +1,7 @@
 import os
 import sqlite3
+from unicodedata import category
+from unittest.mock import DEFAULT
 from flask import Flask, flash, redirect, render_template, request, session, g
 from flask_session import Session
 from flask_limiter import Limiter
@@ -37,7 +39,7 @@ limiter.init_app(app)
 # Configure database. 
 # Note: Switching from cs50 library to sqlite3 to learn without 'training wheels'.
 # I considered switching to PostgreSQL to learn, but decided not to complicate the project too much. 
-# If no database file exists, it will be created automatically. 
+# If no database file exists, it will be created automatically. This is a bit reduntand as the mere act of importing database.py will execute de init but will leave it just in case
 init_db()
 def get_db():
     if "db" not in g:
@@ -52,6 +54,14 @@ def close_db(error):
     if db is not None:
         db.close()
 
+
+# Define default categories for user creation
+DEFAULT_CATEGORIES = [
+    ("Salary", "Income"),
+    ("Freelance", "Income"),
+    ("Rent", "Outcome"),
+    ("Groceries", "Outcome"),
+]
 
 # Auto loggout if inactive, as session_lifetime is just for file cleanup while session_permanent is set to False 
 # Updated: Seems like session_lifetime DOES work even if session_permanent is set to False, so this refresh_session() function is actually not needed. Will leave it here for future reference
@@ -147,13 +157,23 @@ def register():
         # Insert the new user into the database
         # Could consider moving query logic to database.py for better separation of concerns, but keeping it here for simplicity for now.
         try:
-            get_db().execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
-            get_db().commit()
+            db = get_db()
+            cursor = db.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
+            # Get the new user id 
+            new_user_id = cursor.lastrowid 
+                        
+            # Add default categories for new user
+            for name, cat_type in DEFAULT_CATEGORIES:
+                db.execute("INSERT INTO categories (category, type, user_id) VALUES (?, ?, ?)", (name, cat_type, new_user_id))
+            # Commit the changes to the database
+            db.commit()
+
+        # Raise error if username or email already used 
         except sqlite3.IntegrityError:
             flash("Username or email already registered.", "danger")
             return render_template("register.html")
 
-        # Flash if successful 
+            # Flash if successful 
         flash("Registered successfully! Please log in.", "success")
 
         # Redirect to the login page

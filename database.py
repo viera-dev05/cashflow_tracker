@@ -20,5 +20,20 @@ def init_db():
                 hash TEXT NOT NULL
             )
         """)
-        
+
+
+    with sqlite3.connect(DB_PATH) as db:
+        # Create categories table if it doesn't exist
+        db.execute("""
+        CREATE TABLE IF NOT EXISTS categories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category TEXT NOT NULL,
+            type TEXT NOT NULL CHECK (type IN ('Income', 'Outcome')),
+            user_id INTEGER NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            UNIQUE(category, type, user_id)
+        )
+        """)
+
+
     # TODO: Add more tables as needed    
