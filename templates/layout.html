@@ -46,16 +46,16 @@
                             <a class="nav-link" href="/dashboard">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/earnings">Earnings</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/expenses">Expenses</a>
+                            <a class="nav-link" href="/transactions">Transactions</a>
                         </li>
                     </ul>
 
                     <!-- Navbar RIGHT content -->
                     <ul class="navbar-nav ms-auto">
                         {% if session.user_id %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="/profile">Profile</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/logout">Logout</a>
                             </li>

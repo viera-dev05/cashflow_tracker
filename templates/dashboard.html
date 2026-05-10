@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block main %}
+    <h1>Dashboard</h1>
+    <h3>Overview</h3>
+
+    <!-- Display alert message if there is one -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+        
+{% endblock %}

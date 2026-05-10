@@ -10,6 +10,7 @@ from decorators import login_required
 from dotenv import load_dotenv
 from email_validator import validate_email, EmailNotValidError
 import re
+from datetime import timedelta, datetime, timezone
 
 
 # Load environment variables from .env file. Remember to create a .env file with needed variables. See the .env.example file for reference.
@@ -20,6 +21,10 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 if not app.config["SECRET_KEY"]:
     raise ValueError("SECRET_KEY is not set in the environment variables (.env file). Please set it to a secure random value.")
+app.config["SESSION_USE_SIGNER"] = True
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=15) # Server side expiration if session_permanent is set to False
+app.config['SESSION_FILE_THRESHOLD'] = 10 # No need to save large amount of sessions for personal use
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
@@ -31,7 +36,7 @@ limiter.init_app(app)
 
 # Configure database. 
 # Note: Switching from cs50 library to sqlite3 to learn without 'training wheels'.
-# I'm using sqlite, the app won't be able to manage multiple users at the same time. That's fine for the scope of this project.
+# I considered switching to PostgreSQL to learn, but decided not to complicate the project too much. 
 # If no database file exists, it will be created automatically. 
 init_db()
 def get_db():
@@ -48,6 +53,19 @@ def close_db(error):
         db.close()
 
 
+# Auto loggout if inactive, as session_lifetime is just for file cleanup while session_permanent is set to False 
+# Updated: Seems like session_lifetime DOES work even if session_permanent is set to False, so this refresh_session() function is actually not needed. Will leave it here for future reference
+
+# @app.before_request
+# def refresh_session():
+#     if "user_id" in session:
+#         last_active = session.get("last_active", datetime.now(timezone.utc))
+#         if (datetime.now(timezone.utc) - last_active) > timedelta(minutes=15):
+#             session.clear()
+#             return redirect("/welcome")
+#         session["last_active"] = datetime.now(timezone.utc)
+
+
 # Adding cache control to avoid caching issues.
 @app.after_request
 def after_request(response):
@@ -60,16 +78,25 @@ def after_request(response):
 # Welcome page route
 @app.route("/welcome")
 def welcome():
-    return render_template("welcome.html")
+    if "user_id" in session:
+        return redirect("/dashboard")
+    else:
+        return render_template("welcome.html")
 
 # Root route redirects to dashboard if logged in, otherwise to Welcome page.
 @app.route("/")
 @login_required
 def index():
-    return redirect("/dashboard/")
+    return redirect("/dashboard")
 
 
 #TODO: @app.route("/dashboard") to show user's transactions and balance.
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
+
+
 #TODO: Verify that SECRET_KEY is beign used. Log in, then chance secret key and check
 
 
