@@ -84,9 +84,9 @@
     </form>
 
 
-<!-- TODO: ANALIZE THIS SCRIPT CAREFULLY AS IM NOT ENTIRELY SURE HOW IT WORKS (AI WROTE IT)-->
     <script>
-        // 1. Convertir el objeto de Jinja2 a un objeto JavaScript 
+        // Let Jinja convert the python dictionary (categories_dict) to a json so JS can read it.
+        // If dict. is empty, set it to '{}' 
         const categoriesData = {{ categories | tojson | safe if categories else '{}' }};
         const typeSelect = document.getElementById("transaction-type");
         const categorySelect = document.getElementById("category");
@@ -95,8 +95,9 @@
             const selectedType = this.value;
             categorySelect.innerHTML = "";
 
-            // Verificar que existan categorías para el tipo seleccionado antes de iterar
-            if (categoriesData[selectedType] && categoriesData[selectedType].length > 0) {
+            // Check if there is a valid category on the selected type.
+            if (categoriesData[selectedType]) {
+                // Do a for loop to create the categories options based on user's custom options
                 categoriesData[selectedType].forEach(function (item) {
                 const option = document.createElement("option");
                 option.value = item.id;
@@ -104,10 +105,10 @@
                 categorySelect.appendChild(option);
                 });
             } else {
-                // Opcional: mostrar una opción indicando que no hay categorías
+                // If no categories, generic message
                 const option = document.createElement("option");
                 option.value = "";
-                option.textContent = "No categories available";
+                option.textContent = "No category available";
                 categorySelect.appendChild(option);
             }
         });

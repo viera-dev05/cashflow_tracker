@@ -1,4 +1,3 @@
-from curses import use_default_colors
 import os
 import sqlite3
 from unicodedata import category
@@ -107,8 +106,6 @@ def index():
 def dashboard():
     return render_template("dashboard.html")
 
-
-# TODO: ANALYZE THE SCRIPT IN /TRANSACTIONS TO BETTER UNDERSTAND THIS FUNCTION
     
 @app.route("/transactions", methods=["GET", "POST"])
 @login_required
