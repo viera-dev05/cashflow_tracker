@@ -100,32 +100,6 @@ def index():
     return redirect("/dashboard")
 
 
-#TODO: @app.route("/dashboard") to show user's transactions and balance.
-@app.route("/dashboard")
-@login_required
-def dashboard():
-    return render_template("dashboard.html")
-
-    
-@app.route("/transactions", methods=["GET", "POST"])
-@login_required
-def transactions():
-    db = get_db()
-    user_id = session["user_id"]
-
-    # Query the user's categories (needed for both GET and POST to render the form)
-    categories = db.execute("SELECT * FROM categories WHERE user_id = ?", (user_id,)).fetchall()
-    categories_dict = {"Income": [], "Outcome": []}
-    for row in categories:
-        categories_dict[row["type"]].append({"id": row["id"], "category": row["category"]})
-
-    if request.method == "POST":
-        # TODO: Add logic to save the transaction
-        pass
-
-    return render_template("transactions.html", categories=categories_dict)
-
-
 # Register route for new users to create an account.
 @app.route("/register", methods=["GET", "POST"])
 @limiter.limit("5 per minute")  # Limit registration attempts to prevent abuse. 
@@ -228,3 +202,29 @@ def login():
     # If GET request, just render the login form.
     else:
         return render_template("login.html")
+
+
+#TODO: @app.route("/dashboard") to show user's transactions and balance.
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
+
+
+@app.route("/transactions", methods=["GET", "POST"])
+@login_required
+def transactions():
+    db = get_db()
+    user_id = session["user_id"]
+
+    # Query the user's categories (needed for both GET and POST to render the form)
+    categories = db.execute("SELECT * FROM categories WHERE user_id = ?", (user_id,)).fetchall()
+    categories_dict = {"Income": [], "Outcome": []}
+    for row in categories:
+        categories_dict[row["type"]].append({"id": row["id"], "category": row["category"]})
+
+    if request.method == "POST":
+        # TODO: Add logic to save the transaction
+        pass
+
+    return render_template("transactions.html", categories=categories_dict)
