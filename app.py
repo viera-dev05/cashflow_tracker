@@ -205,6 +205,8 @@ def login():
 
 
 #TODO: @app.route("/dashboard") to show user's transactions and balance.
+
+
 @app.route("/dashboard")
 @login_required
 def dashboard():
@@ -225,6 +227,45 @@ def transactions():
 
     if request.method == "POST":
         # TODO: Add logic to save the transaction
-        pass
+        # Verify data before database insertion
+        # First, not empty fields
+        if not request.form.get("date") or not request.form.get("type") or not request.form.get("category") or not request.form.get("amount") or not request.form.get("description"):
+            flash("Please fill out all the fields", "danger")
+        
+        # Check if date is correctly formated
+        try:
+            datetime.strptime(request.form.get("date", ""), "%Y-%m-%d")
+        except (ValueError, TypeError):
+            flash("Invalid date format", "danger")
+            return redirect("/transactions")
+        
+        # Check if type is valid
+        if request.form.get("type") not in ["Income", "Outcome"]:
+            flash("Invalid type", "danger")
+            return redirect("/transactions")
+
+        # Check if category is valid, user_id should not be neccesary if category id is unique, but decided to leave it just in case. Not sure if query could lag with that extra step.
+        if not db.execute("SELECT 1 FROM categories WHERE id = ? AND user_id = ?", (request.form.get("category"), user_id)).fetchone():
+            flash("Invalid category", "danger")
+            return redirect("/transactions")
+
+        # Check amount format
+        try:
+            float(request.form.get("amount", ""))
+        except ValueError:
+            flash("Invalid amount")
+            return redirect("/transactions")
+
+        # Check if description is not empty and max lenght 200
+        if not request.form.get("description") or len(request.form.get("description", "")) > 200:
+            flash("Invalid description")
+            return redirect("/transactions")
+        
+        # test
+        flash("success TEST")
+        return redirect("/transactions")
+
+
+
 
     return render_template("transactions.html", categories=categories_dict)

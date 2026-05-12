@@ -96,6 +96,7 @@
                             rows="3"
                             maxlength="200"
                             placeholder="Description"
+                            required
                         ></textarea>
                         <small id="char-counter">200 characters max</small>
                     </div>
@@ -149,7 +150,8 @@
             decimalCharacter: '.',
             decimalPlaces: 2,
             digitGroupSeparator: ',',
-            minimumValue:'0'
+            minimumValue:'0',
+            unformatOnSubmit: true
         });
 
         // Description char-counter
