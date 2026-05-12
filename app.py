@@ -45,6 +45,7 @@ def get_db():
     if "db" not in g:
         g.db = sqlite3.connect(DB_PATH)
         g.db.row_factory = sqlite3.Row  # To return rows as dictionaries
+        g.db.execute("PRAGMA foreign_keys = ON")  # Enable foreign key constraints
     return g.db
 
 # Close the database connection after each request to prevent resource leaks.
@@ -251,7 +252,7 @@ def transactions():
 
         # Check amount format
         try:
-            float(request.form.get("amount", ""))
+            amount = round(float(request.form.get("amount", "") * 100))
         except ValueError:
             flash("Invalid amount")
             return redirect("/transactions")
