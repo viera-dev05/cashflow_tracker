@@ -66,6 +66,7 @@
                             class="form-select"
                             name="category"
                             id="category"
+                            required
                         >
                             <option value="" selected disabled>Select a type first</option>
                         </select>
@@ -73,17 +74,46 @@
                     
                 </div>
                 <div class="col">
-                    Amount
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="amount"
+                            id="amount"
+                            placeholder="MXN"
+                            required
+                        />
+                    </div>
                 </div>
                 <div class="col">
-                    Description
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea
+                            class="form-control"
+                            name="description"
+                            id="description"
+                            rows="3"
+                            maxlength="200"
+                            placeholder="Description"
+                        ></textarea>
+                        <small id="char-counter">200 characters max</small>
+                    </div>
                 </div>
+                <div class="col">
+                    <div class="mb-3">
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Submit
+                    </button>
             </div>
-            
         </div>
     </form>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.8.1"></script>
     <script>
         // Let Jinja convert the python dictionary (categories_dict) to a json so JS can read it.
         // If dict. is empty, set it to '{}' 
@@ -110,6 +140,35 @@
                 option.value = "";
                 option.textContent = "No category available";
                 categorySelect.appendChild(option);
+            }
+        });
+
+        // Using AutoNumeric for amount field
+        new AutoNumeric('#amount', {
+            currencySymbol: '$',
+            decimalCharacter: '.',
+            decimalPlaces: 2,
+            digitGroupSeparator: ',',
+            minimumValue:'0'
+        });
+
+        // Description char-counter
+        const descriptionInput = document.getElementById('description');
+        const charCounter = document.getElementById('char-counter');
+        
+        descriptionInput.addEventListener('input', function() {
+            const remainingChars = 200 - descriptionInput.value.length;
+            charCounter.textContent = remainingChars + ' characters left';
+            
+            // Change color if remaining char is near end
+            if  (remainingChars > 100) {
+                charCounter.style.color = 'white';
+            }
+            if (remainingChars <= 100) {
+                charCounter.style.color = 'orange';
+            }
+            if (remainingChars <= 50) {
+                charCounter.style.color = 'red';
             }
         });
         </script>
