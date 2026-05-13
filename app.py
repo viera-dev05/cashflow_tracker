@@ -80,7 +80,7 @@ DEFAULT_CATEGORIES = [
 # Check if session is expired before each request.
 @app.before_request
 def check_session_expired():
-    public_routes = ["welcome", "login", "register", "index"]     # Add any other public routes as needed
+    public_routes = ["welcome", "login", "register", "index", "static"]     # Add any other public routes as needed
     if request.endpoint in public_routes:
         return # Skip session check for public routes
     if "user_id" not in session:
