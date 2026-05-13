@@ -142,13 +142,16 @@ def register():
         # Could consider moving query logic to database.py for better separation of concerns, but keeping it here for simplicity for now.
         try:
             db = get_db()
-            cursor = db.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hashed_password))
+            cursor = db.execute("INSERT INTO users (username, email, hash, created_at, is_deleted, deleted_at) VALUES (?, ?, ?, ?, ?, ?)", (username, email, hashed_password, datetime.now(timezone.utc), 0, None))
             # Get the new user id 
             new_user_id = cursor.lastrowid 
                         
             # Add default categories for new user
             for name, cat_type in DEFAULT_CATEGORIES:
-                db.execute("INSERT INTO categories (category, type, user_id) VALUES (?, ?, ?)", (name, cat_type, new_user_id))
+
+                #TODO COMPLETE THE QUERY
+
+                db.execute("INSERT INTO categories (category, type, user_id, created_at, is_deleted, deleted_at) VALUES (?, ?, ?, ?, ?, ?)", (name, cat_type, new_user_id, datetime.now(timezone.utc), 0, None))
             # Commit the changes to the database
             db.commit()
 

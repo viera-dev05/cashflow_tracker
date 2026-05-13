@@ -18,9 +18,9 @@ def init_db():
                 username TEXT NOT NULL UNIQUE,
                 email TEXT NOT NULL UNIQUE,
                 hash TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 is_deleted INTEGER NOT NULL DEFAULT 0,
-                deleted_at TEXT,
-                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                deleted_at TEXT                
             )
         """)
 
@@ -33,6 +33,7 @@ def init_db():
             category TEXT NOT NULL,
             type TEXT NOT NULL CHECK (type IN ('Income', 'Outcome')),
             user_id INTEGER NOT NULL,
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
             is_deleted INTEGER NOT NULL DEFAULT 0,
             deleted_at TEXT, 
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
