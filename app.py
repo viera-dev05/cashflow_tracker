@@ -77,6 +77,17 @@ DEFAULT_CATEGORIES = [
 #         session["last_active"] = datetime.now(timezone.utc)
 
 
+# Check if session is expired before each request.
+@app.before_request
+def check_session_expired():
+    public_routes = ["welcome", "login", "register"]     # Add any other public routes as needed
+    if request.endpoint in public_routes:
+        return # Skip session check for public routes
+    if "user_id" not in session:
+        flash("Please log in to continue.", "warning")
+        return redirect("/login")
+
+
 # Adding cache control to avoid caching issues.
 @app.after_request
 def after_request(response):
@@ -230,7 +241,6 @@ def transactions():
         categories_dict[row["type"]].append({"id": row["id"], "category": row["category"]})
 
     if request.method == "POST":
-        # TODO: Add logic to save the transaction
         # Verify data before database insertion
         # First, not empty fields
         if not request.form.get("date") or not request.form.get("type") or not request.form.get("category") or not request.form.get("amount") or not request.form.get("description"):
@@ -255,7 +265,7 @@ def transactions():
 
         # Check amount format
         try:
-            amount = round(float(request.form.get("amount", "") * 100))
+            amount = round((float(request.form.get("amount", "")) * 100))
         except ValueError:
             flash("Invalid amount")
             return redirect("/transactions")
@@ -265,11 +275,13 @@ def transactions():
             flash("Invalid description")
             return redirect("/transactions")
         
-        # test
-        flash("success TEST")
+        # Insert transaction into database
+        try: 
+            db.execute("INSERT INTO transactions (date, type, category_id, amount, description, user_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)", (request.form.get("date"), request.form.get("type"), request.form.get("category"), amount, request.form.get("description"), user_id, datetime.now(timezone.utc)))
+            db.commit()
+            flash("Transaction added successfully!", "success") 
+        except Exception:
+            flash("Error adding transaction.", "danger")
         return redirect("/transactions")
-
-
-
 
     return render_template("transactions.html", categories=categories_dict)
