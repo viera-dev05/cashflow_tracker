@@ -80,7 +80,7 @@ DEFAULT_CATEGORIES = [
 # Check if session is expired before each request.
 @app.before_request
 def check_session_expired():
-    public_routes = ["welcome", "login", "register"]     # Add any other public routes as needed
+    public_routes = ["welcome", "login", "register", "index"]     # Add any other public routes as needed
     if request.endpoint in public_routes:
         return # Skip session check for public routes
     if "user_id" not in session:
@@ -114,7 +114,7 @@ def index():
 
 # Register route for new users to create an account.
 @app.route("/register", methods=["GET", "POST"])
-@limiter.limit("5 per minute")  # Limit registration attempts to prevent abuse. 
+@limiter.limit("5 per minute", methods=["POST"])  # Limit registration attempts to prevent abuse.
 def register():
     if request.method == "POST":
         # Get form data
@@ -184,7 +184,7 @@ def register():
 
 # Login route for existing users to log in.
 @app.route("/login", methods=["GET", "POST"])
-@limiter.limit("10 per minute")  # Limit login attempts to prevent abuse.
+@limiter.limit("10 per minute", methods=["POST"])  # Limit login attempts to prevent abuse.
 def login():
     # If POST request, process the login form.
     # Note: Copilot auto completion suggest adding account lockout. Not needed for the scope of this project but it was nice to learn about it.
